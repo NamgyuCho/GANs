@@ -56,3 +56,35 @@ class DCGAN(object):
         self.d_bn1 = batch_norm(name='d_bn1')
         self.d_bn2 = batch_norm(name='d_bn2')
 
+        if not self.y_dim:
+            self.d_bn3 = batch_norm(name='d_bn3')
+
+        self.g_bn0 = batch_norm(name='g_bn0')
+        self.g_bn1 = batch_norm(name='g_bn1')
+        self.g_bn2 = batch_norm(name='g_bn2')
+
+        if not self.y_dim:
+            self.g_bn3 = batch_norm(name='g_bn3')
+
+        self.dataset_name = dataset_name
+        self.input_fname_pattern = input_fname_pattern
+        self.checkpoint_dir = checkpoint_dir
+
+        if self.dataset_name == 'mnist':
+            self.data_X, self.data_Y = self.load_mnist()
+            self.c_dim = self.data_X[0].shape[-1]
+        else:
+            self.data = glob(os.path.join('./data', self.dataset_name, self.input_fname_pattern))
+            imreadImg = imread(self.data[0])
+            if len(imreadImg.shape) >= 3: #check if image is a non-grayscale image
+                self.c_dim = imread(self.data[0]).shape[-1]
+            else:
+                self.c_dim = 1
+
+        self.grayscale = (self.c_dim == 1)
+        self.build_model()
+
+    def build_mode(self):
+        if self.y_dim:
+            self.y_dim = tf.placeholder(tf.float32, [self.batch_size, self.y_dim], name='y')
+
