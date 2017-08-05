@@ -26,13 +26,33 @@ class DCGAN(object):
         :param batch_size: The size of batch. Should be specified before training.
         :param y_dim: (optional) Dimension of y [None].
         :param z_dim: (optional) Dimension of z [100].
-        :param gf_dim: (optional) Dimension
-        :param df_dim:
-        :param gfc_dim:
-        :param dfc_dim:
-        :param c_dim:
-        :param dataset_name:
-        :param input_fname_pattern:
-        :param checkpoint_dir:
-        :param sample_dir:
+        :param gf_dim: (optional) Dimension of gen filters in first conv layer [64].
+        :param df_dim: (optional) Dimension of discrim filters in first conv layer [64].
+        :param gfc_dim: (optional) Dimension of gen units for fully connected layer [1024].
+        :param dfc_dim: (optional) Dimension of discrim units for fully connected layer [1024].
+        :param c_dim: (optional) Dimension of image color. For grayscale input, set to 1 [3].
         """
+        self.sess = sess
+        self.crop = crop
+
+        self.batch_size = batch_size
+        self.sample_num = sample_num
+
+        self.input_height = input_height
+        self.input_width = input_width
+        self.output_height = output_height
+        self.output_width = output_width
+
+        self.y_dim = y_dim
+        self.z_dim = z_dim
+
+        self.gf_dim = gf_dim
+        self.df_dim = df_dim
+
+        self.gfc_dim = gfc_dim
+        self.dfc_dim = dfc_dim
+
+        # batch normalization: deals with poor initialization helps gradient flow
+        self.d_bn1 = batch_norm(name='d_bn1')
+        self.d_bn2 = batch_norm(name='d_bn2')
+
